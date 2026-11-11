@@ -5,6 +5,9 @@ A simple Breath of the Wild debug tool for Cemu, tested in US v208
 Requires no mods or file edits.
 Simply launch BOTW in Cemu, set the Cemu folder in the tool, and hit connect.
 
+## Releases
+Donwload the latest release [here](https://github.com/wjr614/blood_moon_counter/releases)
+
 ## Features
 ### View Only:
 Displays:
