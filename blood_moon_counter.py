@@ -3,6 +3,7 @@ import pymem
 import struct
 
 import os
+import sys
 from pathlib import Path
 import configparser
 
@@ -11,10 +12,15 @@ import math
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter import font as tkfont
 
 # Initialize
 roaming_appdata = os.getenv('APPDATA')
-program_folder = Path(__file__).resolve().parent
+program_folder = (
+    Path(sys.executable).resolve().parent
+    if getattr(sys, "frozen", False)
+    else Path(__file__).resolve().parent
+)
 config_path = program_folder / "config.ini"
 connection_status = False
 
@@ -145,8 +151,9 @@ def check_cemu(pm, timer_address):
         start_button.config(state="normal")
 
 def connection_loop(pm, timer_address, schedule_address, schedule_address_2):
+    moon_value = check_cemu(pm, timer_address)
+
     if connection_status:
-        moon_value = check_cemu(pm, timer_address)
         scheduled = read_byte(pm, schedule_address)
         show_connected_widgets(moon_value, scheduled, timer_address)
 
@@ -327,6 +334,44 @@ def validate_number(value):
     except ValueError:
         return False
 
+class ToolTip:
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tooltip = None
+
+        widget.bind("<Enter>", self.show)
+        widget.bind("<Leave>", self.hide)
+
+    def show(self, event = None):
+        if self.tooltip:
+            return
+
+        x = self.widget.winfo_rootx() + 20
+        y = self.widget.winfo_rooty() + self.widget.winfo_height() + 5
+
+        self.tooltip = tk.Toplevel(self.widget)
+        self.tooltip.wm_overrideredirect(True)
+        self.tooltip.wm_geometry(f"+{x}+{y}")
+
+        label = tk.Label(
+            self.tooltip,
+            text = self.text,
+            background = "white",
+            relief = "solid",
+            borderwidth = 1,
+            justify = "left",
+            padx = 8,
+            pady = 5
+        )
+        label.pack()
+
+    def hide(self, event = None):
+        if self.tooltip:
+            self.tooltip.destroy()
+            self.tooltip = None
+
+
 window = tk.Tk()
 window.title("BOTW Blood Moon Tool")
 window.geometry("550x450")
@@ -335,11 +380,29 @@ window.grid_columnconfigure(0, minsize = 200)
 path_label = tk.Label(window, text = "Cemu Folder: " + config["path"]["cemu_folder"])
 path_label.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "w")
 
-cemu_folder_button = tk.Button(window, text = "Set Cemu Folder", command = select_file)
-cemu_folder_button.grid(row = 0, column = 0, padx = 10, pady = 10, sticky = "")
+cemu_folder_frame = tk.Frame(window)
+cemu_folder_frame .grid(row = 0, column = 0, padx = 10, pady = 0, sticky = "")
+
+cemu_folder_button = tk.Button(cemu_folder_frame, text = "Set Cemu Folder", command = select_file)
+cemu_folder_button.pack(side = "top")
+
+underline_font = tkfont.Font(
+    family = "Arial",
+    size = 10,
+    underline = True
+)
+
+cemu_folder_help_label = tk.Label(cemu_folder_frame, text = "Where?", fg = "gray", font = underline_font)
+cemu_folder_help_label.pack(side = "bottom")
+
+ToolTip(
+    cemu_folder_help_label,
+    "In Cemu:\n"
+    "\"File\" --> \"Open Cemu Folder\""
+)
 
 start_button = tk.Button(window, text = "Connect to BOTW", command = startup)
-start_button.grid(row = 1, column = 0, padx = 10, pady = 10, sticky = "")
+start_button.grid(row = 1, column = 0, padx = 10, pady = 0, sticky = "")
 
 connected_label = tk.Label(window, text = "Connection to BOTW: "+ str(connection_status), fg = "red")
 connected_label.grid(row = 1, column = 1, padx = 10, pady = 10, sticky = "w")
