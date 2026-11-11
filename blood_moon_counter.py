@@ -262,6 +262,8 @@ def hide_connected_widgets():
     moon_count_button.grid_remove()
     moon_countdown_label.grid_remove()
     cheats_button.grid_remove()
+    scheduled_moon_label.grid_remove()
+    cemu_base_copy_button.grid_remove()
 
 def show_connected_widgets(moon_value, scheduled, timer_address):
     cemu_base_label.config(text = f"Base Address: {hex(timer_address - timer_offset)}")
@@ -287,7 +289,7 @@ def show_connected_widgets(moon_value, scheduled, timer_address):
     moon_countdown_label.config(text = f"Countdown: {time_left}   Seconds: {int((total-moon_value) * unit_conversion_factor)}", fg = "red" if negative else "black")
     moon_countdown_label.grid(row = 4, column = 1, padx = 10, pady = 10, sticky = "w")
 
-    scheduled_moon_label.config(text = f"Blood Moon Scheduled: {True if scheduled == 1 else False}")
+    scheduled_moon_label.config(text = f"Blood Moon Scheduled: {bool(scheduled) if scheduled is not None else 'Unknown'}")
     scheduled_moon_label.grid(row = 5, column = 1, padx = 10, pady = 2, sticky = "w")
 
     cheats_button.config(text = "Toggle Cheats: On" if cheats_enabled else "Toggle Cheats: Off", fg = "red" if cheats_enabled else "black")
