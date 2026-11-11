@@ -6,7 +6,7 @@ Requires no mods or file edits.
 Simply launch BOTW in Cemu, set the Cemu folder in the tool, and hit connect.
 
 ## Releases
-Donwload the latest release [here](https://github.com/wjr614/blood_moon_counter/releases)
+Download the latest release [here](https://github.com/wjr614/blood_moon_counter/releases)
 
 ## Features
 ### View Only:
